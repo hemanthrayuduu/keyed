@@ -112,7 +112,7 @@ function numericStorageNotice(
 
   const cause = mixedStorage
     ? `"${baseCol.name}" and "${lookupCol.name}" do not agree on whether the key is a number or text`
-    : `keys like "${[...baseCol.samples, ...lookupCol.samples].find(hasLeadingZero)}" keep leading zeros`
+    : `Keys like "${[...baseCol.samples, ...lookupCol.samples].find(hasLeadingZero)}" keep leading zeros`
 
   if (options.coerceNumeric) {
     return {
