@@ -205,6 +205,16 @@ describe('parseCsv', () => {
     expect(data.sourceRowNumbers[0]).toBe(5)
   })
 
+  it('survives a file that mixes \\n and \\r\\n line endings', () => {
+    const file = parseCsv('x.csv', encode('Q3 export\n\nid,name\r\n1,Ada\r\n2,Grace\r\n'))
+    const data = file.sheets['Sheet 1']
+    expect(data.columns.map((c) => c.name)).toEqual(['id', 'name'])
+    expect(data.rows).toEqual([
+      ['1', 'Ada'],
+      ['2', 'Grace'],
+    ])
+  })
+
   it('names blank header cells after their column letter', () => {
     const file = parseCsv('x.csv', encode('id,,name\n1,x,Ada\n'))
     expect(file.sheets['Sheet 1'].columns[1].name).toBe('Column B')

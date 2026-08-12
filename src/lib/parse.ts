@@ -157,7 +157,10 @@ function guessDelimiter(text: string): string {
 
 export function parseCsv(fileName: string, buffer: ArrayBuffer): ParsedFile {
   const hadBom = hasUtf8Bom(buffer)
-  const text = stripBom(new TextDecoder('utf-8').decode(buffer))
+  // Exports with a hand-written preamble often mix \n and \r\n in one file,
+  // which leaves a stray \r on the end of every row if the guess goes the
+  // other way. Settle on \n first and tell Papa not to guess.
+  const text = stripBom(new TextDecoder('utf-8').decode(buffer)).replace(/\r\n?/g, '\n')
   const delimiter = guessDelimiter(text)
 
   const result = Papa.parse<string[]>(text, {
@@ -165,6 +168,7 @@ export function parseCsv(fileName: string, buffer: ArrayBuffer): ParsedFile {
     dynamicTyping: false,
     skipEmptyLines: false,
     delimiter,
+    newline: '\n',
   })
 
   const grid = (result.data as unknown as CellValue[][]) ?? []

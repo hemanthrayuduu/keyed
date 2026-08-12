@@ -67,6 +67,8 @@ export function DropZone({
         ref={inputRef}
         type="file"
         accept={ACCEPT}
+        // Reached through the visible button, so it is not its own tab stop.
+        tabIndex={-1}
         className="sr-only"
         aria-label={`${title} — choose a spreadsheet`}
         onChange={(event) => {
@@ -105,8 +107,11 @@ export function DropZone({
         <div className="flex flex-1 flex-col justify-center gap-2 px-4 py-6" aria-live="polite">
           <span className="datum truncate text-sm text-ink">{state.fileName}</span>
           <span className="text-xs text-slate">Reading in the background…</span>
-          <span aria-hidden="true" className="relative mt-1 h-px w-full overflow-hidden bg-ink/15">
-            <span className="absolute inset-y-0 left-0 w-1/3 animate-[scan_1.1s_ease-in-out_infinite] bg-ultramarine" />
+          {/* With reduced motion the sweep is replaced by a steady bar, not a
+              frozen one that has animated itself off the end of the track. */}
+          <span aria-hidden="true" className="relative mt-1 block h-px w-full overflow-hidden bg-ink/15">
+            <span className="absolute inset-y-0 left-0 w-1/3 animate-[scan_1.1s_ease-in-out_infinite] bg-ultramarine motion-reduce:hidden" />
+            <span className="absolute inset-y-0 left-0 hidden w-full bg-ultramarine/50 motion-reduce:block" />
           </span>
         </div>
       ) : null}

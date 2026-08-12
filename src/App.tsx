@@ -10,7 +10,13 @@ import { downloadBuffer, outputFileName } from './lib/export'
 import { fmtInt } from './lib/format'
 import { mergeSheets } from './lib/merge'
 import { buildExportInWorker, parseFileInWorker } from './lib/workerClient'
-import { DEFAULT_MATCH_OPTIONS, type CellValue, type MatchOptions, type SheetData } from './lib/types'
+import {
+  DEFAULT_MATCH_OPTIONS,
+  type CellValue,
+  type MatchOptions,
+  type ParsedFile,
+  type SheetData,
+} from './lib/types'
 
 type Role = 'base' | 'lookup'
 
@@ -22,6 +28,23 @@ const OPTION_LABELS: { key: keyof MatchOptions; label: string; hint: string }[] 
 
 function normalizeHeader(name: string): string {
   return name.toLowerCase().replace(/[\s_-]+/g, '')
+}
+
+/**
+ * Workbooks often open on a cover or notes tab. The sheet with the most rows is
+ * a better guess at the data than the first one; the picker overrides it.
+ */
+function defaultSheet(file: ParsedFile): string {
+  let best = file.sheetNames[0]
+  let bestRows = -1
+  for (const name of file.sheetNames) {
+    const rows = file.sheets[name]?.rows.length ?? 0
+    if (rows > bestRows) {
+      best = name
+      bestRows = rows
+    }
+  }
+  return best
 }
 
 /** Guess the key pair so the common case needs no thinking: same header, both sides. */
@@ -65,10 +88,7 @@ export default function App() {
 
     try {
       const parsed = await parseFileInWorker(file)
-      const firstWithRows =
-        parsed.sheetNames.find((name) => (parsed.sheets[name]?.rows.length ?? 0) > 0) ??
-        parsed.sheetNames[0]
-      setSlot(role, { status: 'ready', file: parsed, sheetName: firstWithRows })
+      setSlot(role, { status: 'ready', file: parsed, sheetName: defaultSheet(parsed) })
     } catch (error) {
       const message =
         error instanceof Error
@@ -143,6 +163,25 @@ export default function App() {
   const filesReady = baseSheet !== null && lookupSheet !== null
   const unmatchedCount = result?.unmatchedCount ?? 0
 
+  // Parsing and merging both finish without moving focus, so say what happened.
+  const announcement = (() => {
+    const slots = [
+      ['Base file', base] as const,
+      ['Lookup file', lookup] as const,
+    ]
+    for (const [label, slot] of slots) {
+      if (slot.status === 'error') return `${label} failed: ${slot.message}`
+      if (slot.status === 'parsing') return `${label} is being read.`
+    }
+    if (result) {
+      return `Merged. ${fmtInt(result.matchedCount)} of ${fmtInt(
+        result.rows.length,
+      )} rows matched, ${fmtInt(result.unmatchedCount)} unmatched.`
+    }
+    if (filesReady) return 'Both files are ready. Choose the columns to match on.'
+    return ''
+  })()
+
   return (
     <div className="mx-auto flex min-h-full max-w-[1080px] flex-col px-4 pb-16 pt-8 sm:px-8">
       <header className="mb-8">
@@ -162,6 +201,10 @@ export default function App() {
           on this device.
         </p>
       </header>
+
+      <p role="status" aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
 
       <main className="flex flex-col gap-8">
         <StepShell
