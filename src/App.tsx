@@ -356,12 +356,18 @@ export default function App() {
         >
           {result && base.status === 'ready' ? (
             <>
-              <MatchComb
-                rows={result.rows}
-                matchRate={result.matchRate}
-                matchedCount={result.matchedCount}
-                unmatchedCount={result.unmatchedCount}
-              />
+              {result.rows.length === 0 ? (
+                <p className="text-sm text-slate">
+                  The base file has a header but no data rows, so there is nothing to match.
+                </p>
+              ) : (
+                <MatchComb
+                  rows={result.rows}
+                  matchRate={result.matchRate}
+                  matchedCount={result.matchedCount}
+                  unmatchedCount={result.unmatchedCount}
+                />
+              )}
 
               <div className="mt-6 flex flex-col gap-3 border-t border-ink/15 pt-5 sm:flex-row sm:items-center">
                 <button
