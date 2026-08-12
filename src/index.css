@@ -1,0 +1,86 @@
+@import '@fontsource/space-grotesk/latin-500.css';
+@import '@fontsource/space-grotesk/latin-700.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-chassis text-ink font-sans antialiased;
+    /* Faint grid, like graph paper under the panel. */
+    background-image:
+      linear-gradient(to right, rgba(21, 26, 33, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(21, 26, 33, 0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* One focus treatment everywhere: a hard ultramarine ring, always visible. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ultramarine ring-offset-2 ring-offset-panel;
+  }
+
+  ::selection {
+    @apply bg-ultramarine text-panel;
+  }
+}
+
+@layer components {
+  .label-chrome {
+    @apply text-2xs font-semibold uppercase tracking-[0.14em] text-slate;
+  }
+
+  .datum {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Panel: hairline, square, no shadow. */
+  .panel {
+    @apply border border-ink/15 bg-panel;
+  }
+
+  .well {
+    @apply border border-ink/10 bg-well;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 border px-3.5 py-2 text-sm font-medium
+      transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-primary {
+    @apply btn border-ultramarine bg-ultramarine text-panel hover:enabled:bg-[#2233b8]
+      hover:enabled:border-[#2233b8];
+  }
+
+  .btn-ghost {
+    @apply btn border-ink/25 bg-panel text-ink hover:enabled:bg-well;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
