@@ -22,6 +22,34 @@
     height: 100%;
   }
 
+  /*
+   * Everything in the panel is sized in rem, so lifting the root size scales
+   * the whole instrument together — type, spacing, the grid and the comb. A
+   * dense 1080px layout is right on a laptop and looks shrunken on a 27"
+   * display; these steps keep the apparent size roughly constant instead.
+   */
+  html {
+    font-size: 16px;
+  }
+
+  @media (min-width: 1600px) {
+    html {
+      font-size: 17px;
+    }
+  }
+
+  @media (min-width: 2000px) {
+    html {
+      font-size: 18px;
+    }
+  }
+
+  @media (min-width: 2400px) {
+    html {
+      font-size: 19px;
+    }
+  }
+
   body {
     @apply bg-chassis text-ink font-sans antialiased;
     /* Faint grid, like graph paper under the panel. */

@@ -183,7 +183,7 @@ export default function App() {
   })()
 
   return (
-    <div className="mx-auto flex min-h-full max-w-[1080px] flex-col px-4 pb-16 pt-8 sm:px-8">
+    <div className="mx-auto flex min-h-full max-w-[67.5rem] flex-col px-4 pb-16 pt-8 sm:px-8 xl:max-w-[80rem] 2xl:max-w-[88rem]">
       <header className="mb-8">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-ink pb-2">
           <h1 className="font-display text-xl font-bold tracking-tight text-ink">
